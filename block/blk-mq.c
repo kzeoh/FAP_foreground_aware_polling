@@ -3203,7 +3203,7 @@ static bool blk_mq_poll(struct request_queue *q, blk_qc_t cookie)
 	/*kwonje*/
 	if(task_nice(current)!=-2)
 	if (!test_bit(QUEUE_FLAG_POLL, &q->queue_flags)){
-		printk("checking FLAG POLL\n");
+	//	printk("checking FLAG POLL\n");
 		return false;
 	}
 
