@@ -522,12 +522,15 @@ static struct bio *dio_await_one(struct dio *dio)
 	//	printk("start schedule await\n");
 	//	printk("nice: %d\n",task_nice(current));
 
+		if(task_nice(current)==-2)
+			dio->iocb->ki_flag|=IOCB_HIPRI;
+
 		if (!(dio->iocb->ki_flags & IOCB_HIPRI) ||
 		    !blk_poll(dio->bio_disk->queue, dio->bio_cookie)){
 			struct request_queue *q = dio->bio_disk->queue;
-			printk("blk_poll:%d\n",blk_poll(dio->bio_disk->queue, dio->bio_cookie));
-			printk("dio->queue->poll_fn:%d\n",test_bit(QUEUE_FLAG_POLL, &q->queue_flags));
-			printk("hipri:%d\n",(dio->iocb->ki_flags & IOCB_HIPRI));
+			//printk("blk_poll:%d\n",blk_poll(dio->bio_disk->queue, dio->bio_cookie));
+			//printk("dio->queue->poll_fn:%d\n",test_bit(QUEUE_FLAG_POLL, &q->queue_flags));
+			//printk("hipri:%d\n",(dio->iocb->ki_flags & IOCB_HIPRI));
 			printk("nice: %d\n",task_nice(current));
 
 			io_schedule();
