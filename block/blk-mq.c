@@ -3194,14 +3194,18 @@ static bool __blk_mq_poll(struct blk_mq_hw_ctx *hctx, struct request *rq)
 	__set_current_state(TASK_RUNNING);
 	return false;
 }
-
+/*checking polling-kwonje*/
 static bool blk_mq_poll(struct request_queue *q, blk_qc_t cookie)
 {
 	struct blk_mq_hw_ctx *hctx;
 	struct request *rq;
 
-	if (!test_bit(QUEUE_FLAG_POLL, &q->queue_flags))
+	/*kwonje*/
+	if(task_nice(current)!=-2)
+	if (!test_bit(QUEUE_FLAG_POLL, &q->queue_flags)){
+		printk("checking FLAG POLL\n");
 		return false;
+	}
 
 	hctx = q->queue_hw_ctx[blk_qc_t_to_queue_num(cookie)];
 	if (!blk_qc_t_is_internal(cookie))
