@@ -173,6 +173,8 @@ static inline void account_group_exec_runtime(struct task_struct *tsk,
 		return;
 
 	atomic64_add(ns, &cputimer->cputime_atomic.sum_exec_runtime);
+/*	if(task_nice(tsk)==-2)
+		printk("cputimer:%llu\n",&cputimer->cputime_atomic.sum_exec_runtime);*/
 }
 
 static inline void prev_cputime_init(struct prev_cputime *prev)

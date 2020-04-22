@@ -824,11 +824,20 @@ static void update_curr(struct cfs_rq *cfs_rq)
 
 	if (entity_is_task(curr)) {
 		struct task_struct *curtask = task_of(curr);
-
+		
 		trace_sched_stat_runtime(curtask, delta_exec, curr->vruntime);
 		cgroup_account_cputime(curtask, delta_exec);
 		account_group_exec_runtime(curtask, delta_exec);
 	}
+/*	if(entity_is_task(curr)){
+		struct task_struct * curtask= task_of(curr);
+
+		if(task_nice(curtask)==-2)
+			printk("runtime: %llu\n",curr->sum_exec_runtime);
+
+	}*/
+
+//	printk("runtime: %llu\n",curr->sum_exec_runtime);
 
 	account_cfs_rq_runtime(cfs_rq, delta_exec);
 }
@@ -4075,6 +4084,13 @@ check_preempt_tick(struct cfs_rq *cfs_rq, struct sched_entity *curr)
 	ideal_runtime = sched_slice(cfs_rq, curr);
 	delta_exec = curr->sum_exec_runtime - curr->prev_sum_exec_runtime;
 	if (delta_exec > ideal_runtime) {
+		if(entity_is_task(curr)){
+			struct task_struct * curtask= task_of(curr);
+
+			if(task_nice(curtask)==-2)
+				printk("delta: %llu, ideal: %llu\n",delta_exec, ideal_runtime);
+
+		}
 		resched_curr(rq_of(cfs_rq));
 		/*
 		 * The current task ran long enough, ensure it doesn't get

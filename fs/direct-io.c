@@ -521,9 +521,10 @@ static struct bio *dio_await_one(struct dio *dio)
 		
 	//	printk("start schedule await\n");
 	//	printk("nice: %d\n",task_nice(current));
-
-		if(task_nice(current)==-2&&!(dio->iocb->ki_flags & IOCB_HIPRI)) 
-			dio->iocb->ki_flags|=IOCB_HIPRI;
+/*		if(task_nice(current)==-2)
+			printk("utime:%llu, stime:%llu, gtime:%llu\n",current->utime, current->stime, current->gtime);*/
+/*		if(task_nice(current)==-2&&!(dio->iocb->ki_flags & IOCB_HIPRI)) 
+			dio->iocb->ki_flags|=IOCB_HIPRI;*/
 
 		if (!(dio->iocb->ki_flags & IOCB_HIPRI) ||
 		    !blk_poll(dio->bio_disk->queue, dio->bio_cookie)){
