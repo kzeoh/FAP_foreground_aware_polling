@@ -1201,6 +1201,9 @@ struct task_struct {
 	void				*security;
 #endif
 
+	bool cpu_inten;
+	bool io_inten;
+	int nr_preempt;
 	/*
 	 * New fields for task_struct should be added above here, so that
 	 * they are included in the randomized portion of task_struct.

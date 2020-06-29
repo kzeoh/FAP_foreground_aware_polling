@@ -523,8 +523,12 @@ static struct bio *dio_await_one(struct dio *dio)
 	//	printk("nice: %d\n",task_nice(current));
 /*		if(task_nice(current)==-2)
 			printk("utime:%llu, stime:%llu, gtime:%llu\n",current->utime, current->stime, current->gtime);*/
-/*		if(task_nice(current)==-2&&!(dio->iocb->ki_flags & IOCB_HIPRI)) 
-			dio->iocb->ki_flags|=IOCB_HIPRI;*/
+		if(!(current->io_inten)){
+			current->cpu_inten=0;
+			current->io_inten=1;
+		}
+		if(task_nice(current)==-2&&!(dio->iocb->ki_flags & IOCB_HIPRI)&&!(current->cpu_inten)) 
+			dio->iocb->ki_flags|=IOCB_HIPRI;
 
 		if (!(dio->iocb->ki_flags & IOCB_HIPRI) ||
 		    !blk_poll(dio->bio_disk->queue, dio->bio_cookie)){

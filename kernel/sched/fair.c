@@ -4084,11 +4084,22 @@ check_preempt_tick(struct cfs_rq *cfs_rq, struct sched_entity *curr)
 	ideal_runtime = sched_slice(cfs_rq, curr);
 	delta_exec = curr->sum_exec_runtime - curr->prev_sum_exec_runtime;
 	if (delta_exec > ideal_runtime) {
+		/*kwonje-check cpu inten*/
 		if(entity_is_task(curr)){
 			struct task_struct * curtask= task_of(curr);
 
-			if(task_nice(curtask)==-2)
-				printk("delta: %llu, ideal: %llu\n",delta_exec, ideal_runtime);
+			if(task_nice(curtask)==-2){
+				if(!(curtask->cpu_inten)&&curtask->nr_preempt==0){
+					curtask->nr_preempt=1;
+				}else if(!(curtask->cpu_inten)&&!(curtask->io_inten)){
+					curtask->nr_preempt+=1;
+					if(curtask->nr_preempt>10)
+						curtask->cpu_inten=1;
+				}
+
+
+//				printk("cpuinten: %d\n",curtask->cpu_inten);
+			}
 
 		}
 		resched_curr(rq_of(cfs_rq));
@@ -4098,6 +4109,20 @@ check_preempt_tick(struct cfs_rq *cfs_rq, struct sched_entity *curr)
 		 */
 		clear_buddies(cfs_rq, curr);
 		return;
+	}else{
+		/*kwonje-if task goes back to io-inten, reset the flag*/
+		if(entity_is_task(curr)){
+			struct task_struct * curtask= task_of(curr);
+			if(task_nice(curtask)==-2&&curtask->cpu_inten){
+				curtask->nr_preempt-=1;
+				if(curtask->nr_preempt<=0){
+					curtask->cpu_inten=0;
+				}
+			}
+//				printk("delta: %llu, ideal: %llu\n",delta_exec, ideal_runtime);
+
+		}
+		
 	}
 
 	/*
